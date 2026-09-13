@@ -1,0 +1,39 @@
+{
+  "name": "n8n-nodes-flovoo",
+  "version": "0.1.0",
+  "description": "n8n community node for the Flovoo WhatsApp Business API",
+  "keywords": ["n8n-community-node-package", "flovoo", "whatsapp"],
+  "license": "MIT",
+  "author": {
+    "name": "Flovoo",
+    "email": "mohamed.usama@flovoo.com"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Eduncy-tech/n8n-nodes-flovoo.git"
+  },
+  "main": "index.js",
+  "scripts": {
+    "build": "rm -rf dist && tsc -p tsconfig.json && cp -r nodes/Flovoo/icons dist/nodes/Flovoo/icons",
+    "dev": "tsc -p tsconfig.json --watch",
+    "lint": "eslint nodes credentials",
+    "prepublishOnly": "pnpm build"
+  },
+  "files": ["dist"],
+  "n8n": {
+    "n8nNodesApiVersion": 1,
+    "credentials": ["dist/credentials/FlovooApi.credentials.js"],
+    "nodes": [
+      "dist/nodes/Flovoo/Flovoo.node.js",
+      "dist/nodes/Flovoo/FlovooTrigger.node.js"
+    ]
+  },
+  "devDependencies": {
+    "@types/node": "^20.0.0",
+    "n8n-workflow": "^1.70.0",
+    "typescript": "^5.5.0"
+  },
+  "peerDependencies": {
+    "n8n-workflow": "*"
+  }
+}

@@ -1,0 +1,112 @@
+import type { INodeProperties } from 'n8n-workflow';
+
+export const templateOperations: INodeProperties[] = [
+  {
+    displayName: 'Operation',
+    name: 'operation',
+    type: 'options',
+    noDataExpression: true,
+    displayOptions: { show: { resource: ['template'] } },
+    options: [
+      { name: 'Get Many', value: 'getAll', action: 'Get many templates' },
+      { name: 'Send', value: 'send', action: 'Send a template' },
+    ],
+    default: 'send',
+  },
+];
+
+export const templateFields: INodeProperties[] = [
+  // getAll
+  {
+    displayName: 'Page Size',
+    name: 'limit',
+    type: 'number',
+    default: 20,
+    typeOptions: { minValue: 1, maxValue: 100 },
+    displayOptions: { show: { resource: ['template'], operation: ['getAll'] } },
+  },
+  {
+    displayName: 'Page Number',
+    name: 'page',
+    type: 'number',
+    default: 1,
+    typeOptions: { minValue: 1 },
+    displayOptions: { show: { resource: ['template'], operation: ['getAll'] } },
+  },
+  {
+    displayName: 'Filters',
+    name: 'filters',
+    type: 'collection',
+    placeholder: 'Add Filter',
+    default: {},
+    displayOptions: { show: { resource: ['template'], operation: ['getAll'] } },
+    options: [
+      { displayName: 'Search', name: 'search', type: 'string', default: '' },
+      {
+        displayName: 'Status',
+        name: 'status',
+        type: 'options',
+        options: [
+          { name: 'Approved', value: 'APPROVED' },
+          { name: 'Pending', value: 'PENDING' },
+          { name: 'Rejected', value: 'REJECTED' },
+          { name: 'Paused', value: 'PAUSED' },
+          { name: 'Disabled', value: 'DISABLED' },
+        ],
+        default: 'APPROVED',
+      },
+    ],
+  },
+
+  // send
+  {
+    displayName: 'Conversation ID',
+    name: 'conversationId',
+    type: 'string',
+    default: '',
+    required: true,
+    displayOptions: { show: { resource: ['template'], operation: ['send'] } },
+  },
+  {
+    displayName: 'Contact ID',
+    name: 'contactId',
+    type: 'string',
+    default: '',
+    required: true,
+    displayOptions: { show: { resource: ['template'], operation: ['send'] } },
+  },
+  {
+    displayName: 'Template ID',
+    name: 'templateId',
+    type: 'string',
+    default: '',
+    required: true,
+    displayOptions: { show: { resource: ['template'], operation: ['send'] } },
+  },
+  {
+    displayName: 'Additional Fields',
+    name: 'additionalFields',
+    type: 'collection',
+    placeholder: 'Add Field',
+    default: {},
+    displayOptions: { show: { resource: ['template'], operation: ['send'] } },
+    options: [
+      {
+        displayName: 'Body Parameters',
+        name: 'bodyParameters',
+        type: 'string',
+        default: '',
+        description: 'Comma-separated values, in the order the template variables appear',
+      },
+      { displayName: 'Header Text Parameter', name: 'headerTextParameter', type: 'string', default: '' },
+      { displayName: 'Header Media Key', name: 'headerMediaKey', type: 'string', default: '' },
+      {
+        displayName: 'URL Button Parameters',
+        name: 'urlButtonParameters',
+        type: 'string',
+        default: '',
+        description: 'Comma-separated values for dynamic URL button variables',
+      },
+    ],
+  },
+];
