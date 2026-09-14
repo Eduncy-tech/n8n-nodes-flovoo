@@ -1,8 +1,10 @@
 import type {
   IExecuteFunctions,
+  ILoadOptionsFunctions,
   INodeExecutionData,
   INodeType,
   INodeTypeDescription,
+  INodePropertyOptions,
   IDataObject,
 } from 'n8n-workflow';
 import { NodeConnectionTypes } from 'n8n-workflow';
@@ -10,8 +12,9 @@ import { NodeConnectionTypes } from 'n8n-workflow';
 import { flovooApiRequest, cleanObject } from './GenericFunctions';
 import { channelFields, channelOperations } from './descriptions/ChannelDescription';
 import { contactFields, contactOperations } from './descriptions/ContactDescription';
-import { contactStageFields, contactStageOperations } from './descriptions/ContactStageDescription';
+import { stageFields as contactStageFields, stageOperations as contactStageOperations } from './descriptions/ContactStageDescription';
 import { conversationFields, conversationOperations } from './descriptions/ConversationDescription';
+import { customFieldFields, customFieldOperations } from './descriptions/CustomFieldDescription';
 import { messageFields, messageOperations } from './descriptions/MessageDescription';
 import { segmentFields, segmentOperations } from './descriptions/SegmentDescription';
 import { tagFields, tagOperations } from './descriptions/TagDescription';
@@ -53,8 +56,9 @@ export class Flovoo implements INodeType {
           { name: 'Message', value: 'message' },
           { name: 'Template', value: 'template' },
           { name: 'Tag', value: 'tag' },
-          { name: 'Contact Stage', value: 'contactStage' },
+          { name: 'Stage', value: 'contactStage' },
           { name: 'Segment', value: 'segment' },
+          { name: 'Custom Field', value: 'customField' },
           { name: 'User', value: 'user' },
           { name: 'Channel', value: 'channel' },
         ],
@@ -74,6 +78,8 @@ export class Flovoo implements INodeType {
       ...contactStageFields,
       ...segmentOperations,
       ...segmentFields,
+      ...customFieldOperations,
+      ...customFieldFields,
       ...userOperations,
       ...userFields,
       ...channelOperations,
@@ -95,47 +101,75 @@ export class Flovoo implements INodeType {
         if (operation === 'create') {
           const name = this.getNodeParameter('name', i) as string;
           const phone = this.getNodeParameter('phone', i) as string;
+          const email = this.getNodeParameter('email', i) as string;
+          const stageId = this.getNodeParameter('stageId', i) as string;
+          const tagIds = this.getNodeParameter('tagIds', i) as string[];
           const additional = this.getNodeParameter('additionalFields', i) as IDataObject;
           const body = cleanObject({
             name,
             phone,
-            email: additional.email,
+            email,
+            stageId,
+            tagIds: tagIds.length ? tagIds : undefined,
             avatar: additional.avatar,
             assigneeId: additional.assigneeId,
-            stageId: additional.stageId,
-            tagIds: splitIds(additional.tagIds as string),
           });
           responseData = await flovooApiRequest.call(this, 'POST', '/v1/contacts', body);
         } else if (operation === 'get') {
-          const contactId = this.getNodeParameter('contactId', i) as string;
-          responseData = await flovooApiRequest.call(this, 'GET', `/v1/contacts/${contactId}`);
+          const identifierType = this.getNodeParameter('identifierType', i) as string;
+          if (identifierType === 'search') {
+            const searchValue = this.getNodeParameter('searchValue', i) as string;
+            const response = await flovooApiRequest.call(this, 'GET', '/v1/contacts', {}, { search: searchValue, limit: 1 });
+            const [match] = response.data as IDataObject[];
+            if (!match) {
+              throw new Error(`No contact found matching "${searchValue}"`);
+            }
+            responseData = match;
+          } else {
+            const contactId = this.getNodeParameter('contactId', i) as string;
+            responseData = await flovooApiRequest.call(this, 'GET', `/v1/contacts/${contactId}`);
+          }
         } else if (operation === 'getAll') {
           const limit = this.getNodeParameter('limit', i) as number;
           const page = this.getNodeParameter('page', i) as number;
           const filters = this.getNodeParameter('filters', i) as IDataObject;
+          const filterTagIds = filters.tagIds as string[] | undefined;
+          const filterStageIds = filters.stageIds as string[] | undefined;
+          const filterAssigneeIds = filters.assigneeIds as string[] | undefined;
           const qs = cleanObject({
             search: filters.search,
             status: filters.status,
             isBlocked: filters.isBlocked,
-            tagIds: splitIds(filters.tagIds as string),
-            stageIds: splitIds(filters.stageIds as string),
-            assigneeIds: splitIds(filters.assigneeIds as string),
+            tagIds: filterTagIds?.length ? filterTagIds : undefined,
+            stageIds: filterStageIds?.length ? filterStageIds : undefined,
+            assigneeIds: filterAssigneeIds?.length ? filterAssigneeIds : undefined,
           });
           const response = await flovooApiRequest.call(this, 'GET', '/v1/contacts', {}, { ...qs, limit, page });
           responseData = response.data as IDataObject[];
         } else if (operation === 'update') {
           const contactId = this.getNodeParameter('contactId', i) as string;
-          const update = this.getNodeParameter('updateFields', i) as IDataObject;
+          const name = this.getNodeParameter('name', i) as string;
+          const phone = this.getNodeParameter('phone', i) as string;
+          const email = this.getNodeParameter('email', i) as string;
+          const stageId = this.getNodeParameter('stageId', i) as string;
+          const tagIds = this.getNodeParameter('tagIds', i) as string[];
+          const additional = this.getNodeParameter('additionalFields', i) as IDataObject;
+          const customFieldsCollection = this.getNodeParameter('customFields', i) as IDataObject;
+          const customFieldRows = (customFieldsCollection.field as IDataObject[] | undefined) ?? [];
+          const customFields = customFieldRows.reduce((acc, row) => {
+            if (row.key) acc[row.key as string] = row.value;
+            return acc;
+          }, {} as IDataObject);
           const body = cleanObject({
-            name: update.name,
-            phone: update.phone,
-            email: update.email,
-            avatar: update.avatar,
-            assigneeId: update.assigneeId,
-            stageId: update.stageId,
-            notes: update.notes,
-            status: update.status,
-            tagIds: splitIds(update.tagIds as string),
+            name,
+            phone,
+            email,
+            avatar: additional.avatar,
+            assigneeId: additional.assigneeId,
+            stageId,
+            status: additional.status,
+            tagIds: tagIds?.length ? tagIds : undefined,
+            customFields: Object.keys(customFields).length ? customFields : undefined,
           });
           responseData = await flovooApiRequest.call(this, 'PATCH', `/v1/contacts/${contactId}`, body);
         } else if (operation === 'delete') {
@@ -231,9 +265,10 @@ export class Flovoo implements INodeType {
           const response = await flovooApiRequest.call(this, 'GET', '/v1/tags', {}, { limit, page });
           responseData = response.data as IDataObject[];
         } else if (operation === 'update') {
+          const name = this.getNodeParameter('name', i) as string;
+          const color = this.getNodeParameter('color', i) as string;
           const tagId = this.getNodeParameter('tagId', i) as string;
-          const update = this.getNodeParameter('updateFields', i) as IDataObject;
-          responseData = await flovooApiRequest.call(this, 'PATCH', `/v1/tags/${tagId}`, cleanObject(update));
+          responseData = await flovooApiRequest.call(this, 'PATCH', `/v1/tags/${tagId}`, cleanObject({ name, color }));
         } else if (operation === 'delete') {
           const tagId = this.getNodeParameter('tagId', i) as string;
           await flovooApiRequest.call(this, 'DELETE', `/v1/tags/${tagId}`);
@@ -244,9 +279,13 @@ export class Flovoo implements INodeType {
           const response = await flovooApiRequest.call(this, 'GET', '/v1/contact-stages');
           responseData = response.data as IDataObject[];
         } else if (operation === 'update') {
+          const name = this.getNodeParameter('name', i) as string;
           const stageId = this.getNodeParameter('stageId', i) as string;
-          const update = this.getNodeParameter('updateFields', i) as IDataObject;
-          responseData = await flovooApiRequest.call(this, 'PATCH', `/v1/contact-stages/${stageId}`, cleanObject(update));
+          const color = this.getNodeParameter('color', i) as string;
+          const description = this.getNodeParameter('description', i) as string;
+          responseData = await flovooApiRequest.call(
+            this, 'PATCH', `/v1/contact-stages/${stageId}`, cleanObject({ name, color, description }),
+          );
         } else if (operation === 'delete') {
           const stageId = this.getNodeParameter('stageId', i) as string;
           const transferToStageId = this.getNodeParameter('transferToStageId', i) as string;
@@ -256,6 +295,49 @@ export class Flovoo implements INodeType {
       } else if (resource === 'segment') {
         const response = await flovooApiRequest.call(this, 'GET', '/v1/segments');
         responseData = response.data as IDataObject[];
+      } else if (resource === 'customField') {
+        if (operation === 'getAll') {
+          const status = this.getNodeParameter('status', i) as string;
+          const response = await flovooApiRequest.call(this, 'GET', '/v1/custom-fields', {}, { status });
+          responseData = response.data as IDataObject[];
+        } else if (operation === 'create') {
+          const name = this.getNodeParameter('name', i) as string;
+          const type = this.getNodeParameter('type', i) as string;
+          const description = this.getNodeParameter('description', i) as string;
+          const optionsCollection = this.getNodeParameter('options', i) as IDataObject;
+          const optionRows = (optionsCollection.option as IDataObject[] | undefined) ?? [];
+          const options = optionRows.map((row) => cleanObject({ label: row.label, color: row.color }));
+          const body = cleanObject({
+            name,
+            type,
+            description: description || undefined,
+            options: options.length ? options : undefined,
+          });
+          responseData = await flovooApiRequest.call(this, 'POST', '/v1/custom-fields', body);
+        } else if (operation === 'update') {
+          const customFieldId = this.getNodeParameter('customFieldId', i) as string;
+          const name = this.getNodeParameter('name', i) as string;
+          const description = this.getNodeParameter('description', i) as string;
+          const optionsCollection = this.getNodeParameter('options', i) as IDataObject;
+          const optionRows = (optionsCollection.option as IDataObject[] | undefined) ?? [];
+          const options = optionRows.map((row) => cleanObject({ id: row.id, label: row.label, color: row.color }));
+          const body = cleanObject({
+            name: name || undefined,
+            description: description || undefined,
+            options: options.length ? options : undefined,
+          });
+          responseData = await flovooApiRequest.call(this, 'PATCH', `/v1/custom-fields/${customFieldId}`, body);
+        } else if (operation === 'archive') {
+          const customFieldId = this.getNodeParameter('customFieldId', i) as string;
+          responseData = await flovooApiRequest.call(this, 'PATCH', `/v1/custom-fields/${customFieldId}/archive`);
+        } else if (operation === 'restore') {
+          const customFieldId = this.getNodeParameter('customFieldId', i) as string;
+          responseData = await flovooApiRequest.call(this, 'PATCH', `/v1/custom-fields/${customFieldId}/restore`);
+        } else if (operation === 'delete') {
+          const customFieldId = this.getNodeParameter('customFieldId', i) as string;
+          await flovooApiRequest.call(this, 'DELETE', `/v1/custom-fields/${customFieldId}`);
+          responseData = { success: true };
+        }
       } else if (resource === 'template') {
         if (operation === 'getAll') {
           const limit = this.getNodeParameter('limit', i) as number;
@@ -302,4 +384,81 @@ export class Flovoo implements INodeType {
 
     return [this.helpers.returnJsonArray(returnData)];
   }
+
+  methods = {
+    loadOptions: {
+      async getTags(this: ILoadOptionsFunctions): Promise<INodePropertyOptions[]> {
+        const response = await flovooApiRequest.call(this as unknown as IExecuteFunctions, 'GET', '/v1/tags', {}, { limit: 100 });
+        return (response.data as IDataObject[]).map((tag) => ({
+          name: tag.name as string,
+          value: tag.id as string,
+        }));
+      },
+      async getStages(this: ILoadOptionsFunctions): Promise<INodePropertyOptions[]> {
+        const response = await flovooApiRequest.call(this as unknown as IExecuteFunctions, 'GET', '/v1/contact-stages');
+        return (response.data as IDataObject[]).map((stage) => ({
+          name: stage.name as string,
+          value: stage.id as string,
+        }));
+      },
+      async getStagesExcludingSelected(this: ILoadOptionsFunctions): Promise<INodePropertyOptions[]> {
+        const response = await flovooApiRequest.call(this as unknown as IExecuteFunctions, 'GET', '/v1/contact-stages');
+        const selectedStageId = this.getCurrentNodeParameter('stageId') as string;
+        return (response.data as IDataObject[])
+          .filter((stage) => stage.id !== selectedStageId)
+          .map((stage) => ({
+            name: stage.name as string,
+            value: stage.id as string,
+          }));
+      },
+      async getUsers(this: ILoadOptionsFunctions): Promise<INodePropertyOptions[]> {
+        const response = await flovooApiRequest.call(this as unknown as IExecuteFunctions, 'GET', '/v1/users', {}, { limit: 100 });
+        return (response.data as IDataObject[]).map((user) => ({
+          name: user.name as string,
+          value: user.id as string,
+        }));
+      },
+      async getTemplates(this: ILoadOptionsFunctions): Promise<INodePropertyOptions[]> {
+        const response = await flovooApiRequest.call(this as unknown as IExecuteFunctions, 'GET', '/v1/whatsapp-templates', {}, { limit: 100 });
+        return (response.data as IDataObject[]).map((template) => ({
+          name: template.name as string,
+          value: template.id as string,
+        }));
+      },
+      async getChannels(this: ILoadOptionsFunctions): Promise<INodePropertyOptions[]> {
+        const response = await flovooApiRequest.call(this as unknown as IExecuteFunctions, 'GET', '/v1/channels');
+        return (response.data as IDataObject[]).map((channel) => ({
+          name: channel.name as string,
+          value: channel.id as string,
+        }));
+      },
+      async getCustomFields(this: ILoadOptionsFunctions): Promise<INodePropertyOptions[]> {
+        const response = await flovooApiRequest.call(
+          this as unknown as IExecuteFunctions, 'GET', '/v1/custom-fields', {}, { status: 'ACTIVE' },
+        );
+        return (response.data as IDataObject[]).map((field) => ({
+          name: field.name as string,
+          value: field.id as string,
+        }));
+      },
+      async getArchivedCustomFields(this: ILoadOptionsFunctions): Promise<INodePropertyOptions[]> {
+        const response = await flovooApiRequest.call(
+          this as unknown as IExecuteFunctions, 'GET', '/v1/custom-fields', {}, { status: 'ARCHIVED' },
+        );
+        return (response.data as IDataObject[]).map((field) => ({
+          name: field.name as string,
+          value: field.id as string,
+        }));
+      },
+      async getCustomFieldKeys(this: ILoadOptionsFunctions): Promise<INodePropertyOptions[]> {
+        const response = await flovooApiRequest.call(
+          this as unknown as IExecuteFunctions, 'GET', '/v1/custom-fields', {}, { status: 'ACTIVE' },
+        );
+        return (response.data as IDataObject[]).map((field) => ({
+          name: field.name as string,
+          value: field.fieldKey as string,
+        }));
+      },
+    },
+  };
 }

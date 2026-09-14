@@ -8,8 +8,18 @@ export const templateOperations: INodeProperties[] = [
     noDataExpression: true,
     displayOptions: { show: { resource: ['template'] } },
     options: [
-      { name: 'Get Many', value: 'getAll', action: 'Get many templates' },
-      { name: 'Send', value: 'send', action: 'Send a template' },
+      {
+        name: 'Get Many',
+        value: 'getAll',
+        action: 'Get many templates',
+        description: 'Return a page of WhatsApp message templates, approved by default — filter by status to see others',
+      },
+      {
+        name: 'Send',
+        value: 'send',
+        action: 'Send a template',
+        description: 'Send an approved WhatsApp template — the only way to message a contact outside the 24-hour window',
+      },
     ],
     default: 'send',
   },
@@ -76,9 +86,10 @@ export const templateFields: INodeProperties[] = [
     displayOptions: { show: { resource: ['template'], operation: ['send'] } },
   },
   {
-    displayName: 'Template ID',
+    displayName: 'Template',
     name: 'templateId',
-    type: 'string',
+    type: 'options',
+    typeOptions: { loadOptionsMethod: 'getTemplates' },
     default: '',
     required: true,
     displayOptions: { show: { resource: ['template'], operation: ['send'] } },

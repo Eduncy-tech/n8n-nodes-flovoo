@@ -7,7 +7,14 @@ export const segmentOperations: INodeProperties[] = [
     type: 'options',
     noDataExpression: true,
     displayOptions: { show: { resource: ['segment'] } },
-    options: [{ name: 'Get Many', value: 'getAll', action: 'Get many segments' }],
+    options: [
+      {
+        name: 'Get Many',
+        value: 'getAll',
+        action: 'Get many segments',
+        description: 'Return every saved contact segment',
+      },
+    ],
     default: 'getAll',
   },
 ];

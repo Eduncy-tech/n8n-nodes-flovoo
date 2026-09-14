@@ -8,9 +8,24 @@ export const tagOperations: INodeProperties[] = [
     noDataExpression: true,
     displayOptions: { show: { resource: ['tag'] } },
     options: [
-      { name: 'Get Many', value: 'getAll', action: 'Get many tags' },
-      { name: 'Update', value: 'update', action: 'Update a tag' },
-      { name: 'Delete', value: 'delete', action: 'Delete a tag' },
+      {
+        name: 'Get Many',
+        value: 'getAll',
+        action: 'Get many tags',
+        description: 'Return a page of tags',
+      },
+      {
+        name: 'Update',
+        value: 'update',
+        action: 'Update a tag',
+        description: "Rename a tag or change its color",
+      },
+      {
+        name: 'Delete',
+        value: 'delete',
+        action: 'Delete a tag',
+        description: 'Permanently delete a tag and remove it from every contact',
+      },
     ],
     default: 'getAll',
   },
@@ -18,24 +33,36 @@ export const tagOperations: INodeProperties[] = [
 
 export const tagFields: INodeProperties[] = [
   {
-    displayName: 'Tag ID',
+    displayName: 'Tag',
     name: 'tagId',
-    type: 'string',
+    type: 'options',
+    typeOptions: { loadOptionsMethod: 'getTags' },
     default: '',
     required: true,
-    displayOptions: { show: { resource: ['tag'], operation: ['update', 'delete'] } },
+    displayOptions: { show: { resource: ['tag'], operation: ['delete'] } },
   },
   {
-    displayName: 'Update Fields',
-    name: 'updateFields',
-    type: 'collection',
-    placeholder: 'Add Field',
-    default: {},
+    displayName: 'Name',
+    name: 'name',
+    type: 'string',
+    default: '',
     displayOptions: { show: { resource: ['tag'], operation: ['update'] } },
-    options: [
-      { displayName: 'Name', name: 'name', type: 'string', default: '' },
-      { displayName: 'Color', name: 'color', type: 'color', default: '#74d44e' },
-    ],
+  },
+  {
+    displayName: 'Tag',
+    name: 'tagId',
+    type: 'options',
+    typeOptions: { loadOptionsMethod: 'getTags' },
+    default: '',
+    required: true,
+    displayOptions: { show: { resource: ['tag'], operation: ['update'] } },
+  },
+  {
+    displayName: 'Color',
+    name: 'color',
+    type: 'color',
+    default: '#74d44e',
+    displayOptions: { show: { resource: ['tag'], operation: ['update'] } },
   },
 
   {

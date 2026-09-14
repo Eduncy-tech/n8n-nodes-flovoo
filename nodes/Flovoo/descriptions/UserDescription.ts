@@ -7,7 +7,14 @@ export const userOperations: INodeProperties[] = [
     type: 'options',
     noDataExpression: true,
     displayOptions: { show: { resource: ['user'] } },
-    options: [{ name: 'Get Many', value: 'getAll', action: 'Get many users' }],
+    options: [
+      {
+        name: 'Get Many',
+        value: 'getAll',
+        action: 'Get many users',
+        description: 'Return a page of your organization\'s members — use an id here as a contact\'s assignee',
+      },
+    ],
     default: 'getAll',
   },
 ];

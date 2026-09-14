@@ -8,9 +8,24 @@ export const messageOperations: INodeProperties[] = [
     noDataExpression: true,
     displayOptions: { show: { resource: ['message'] } },
     options: [
-      { name: 'Get Many', value: 'getAll', action: 'Get many messages' },
-      { name: 'Send', value: 'send', action: 'Send a message' },
-      { name: 'Send Reaction', value: 'sendReaction', action: 'Send a reaction' },
+      {
+        name: 'Get Many',
+        value: 'getAll',
+        action: 'Get many messages',
+        description: 'Return a page of messages in a conversation',
+      },
+      {
+        name: 'Send',
+        value: 'send',
+        action: 'Send a message',
+        description: 'Send a free-text message in an open conversation window',
+      },
+      {
+        name: 'Send Reaction',
+        value: 'sendReaction',
+        action: 'Send a reaction',
+        description: 'React to a specific message with an emoji, or remove an existing reaction',
+      },
     ],
     default: 'send',
   },

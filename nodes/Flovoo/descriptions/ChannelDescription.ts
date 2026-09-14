@@ -7,7 +7,14 @@ export const channelOperations: INodeProperties[] = [
     type: 'options',
     noDataExpression: true,
     displayOptions: { show: { resource: ['channel'] } },
-    options: [{ name: 'Get Many', value: 'getAll', action: 'Get many channels' }],
+    options: [
+      {
+        name: 'Get Many',
+        value: 'getAll',
+        action: 'Get many channels',
+        description: 'Return every connected channel (WhatsApp, Messenger, Instagram...)',
+      },
+    ],
     default: 'getAll',
   },
 ];
