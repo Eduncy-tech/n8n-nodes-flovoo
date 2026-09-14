@@ -74,6 +74,11 @@ export class FlovooTrigger implements INodeType {
           { name: 'Template Status Updated', value: 'template.status.updated' },
           { name: 'Template Quality Updated', value: 'template.quality.updated' },
           { name: 'Template Category Updated', value: 'template.category.updated' },
+          { name: 'Channel Status Updated', value: 'channel.status.updated' },
+          { name: 'WABA Violation Detected', value: 'waba.violation.detected' },
+          { name: 'WABA Restrictions Updated', value: 'waba.restrictions.updated' },
+          { name: 'Broadcast Completed', value: 'broadcast.completed' },
+          { name: 'Broadcast Failed', value: 'broadcast.failed' },
         ],
         default: [],
       },
@@ -84,7 +89,28 @@ export class FlovooTrigger implements INodeType {
     default: {
       async checkExists(this: IHookFunctions): Promise<boolean> {
         const webhookData = this.getWorkflowStaticData('node');
-        return webhookData.webhookSubscriptionId !== undefined;
+        const subscriptionId = webhookData.webhookSubscriptionId as string | undefined;
+        if (!subscriptionId) return false;
+
+        const credentials = await this.getCredentials('flovooApi');
+        const baseUrl = (credentials.baseUrl as string).replace(/\/+$/, '');
+
+        try {
+          const existing = (await this.helpers.httpRequestWithAuthentication.call(this, 'flovooApi', {
+            method: 'GET',
+            url: `${baseUrl}/v1/webhooks`,
+            json: true,
+          })) as IDataObject;
+          const subscriptions = (existing.data as IDataObject[] | undefined) ?? [];
+          const stillThere = subscriptions.some((sub) => sub.id === subscriptionId);
+          if (stillThere) return true;
+
+          delete webhookData.webhookSubscriptionId;
+          delete webhookData.webhookSecret;
+          return false;
+        } catch {
+          return true;
+        }
       },
 
       async create(this: IHookFunctions): Promise<boolean> {
@@ -126,8 +152,13 @@ export class FlovooTrigger implements INodeType {
             url: `${baseUrl}/v1/webhooks/${subscriptionId}`,
             json: true,
           });
-        } catch {
-          // Already gone server-side — nothing more to clean up locally.
+        } catch (error) {
+          const statusCode = (error as { statusCode?: number; response?: { statusCode?: number } })
+            .statusCode ?? (error as { response?: { statusCode?: number } }).response?.statusCode;
+          if (statusCode !== 404) {
+            return true;
+          }
+          // 404: already gone server-side, nothing more to clean up.
         }
 
         delete webhookData.webhookSubscriptionId;
@@ -144,11 +175,6 @@ export class FlovooTrigger implements INodeType {
 
     const req = this.getRequestObject();
     const signatureHeader = req.headers['x-flovo-signature'] as string | undefined;
-    // Falling back to `JSON.stringify(getBodyData())` here would re-serialize
-    // an already-parsed body, which is not guaranteed to reproduce the exact
-    // bytes Flovoo signed (key order, spacing) — that reintroduces the same
-    // false-negative risk `rawBody` exists to avoid. Reject instead of
-    // guessing.
     const rawBody = (req as unknown as { rawBody?: Buffer }).rawBody?.toString('utf8');
 
     if (!secret || !rawBody || !verifySignature(signatureHeader, rawBody, secret)) {
