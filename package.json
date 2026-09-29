@@ -22,7 +22,7 @@
     "dev": "tsc -p tsconfig.json --watch",
     "lint": "eslint nodes credentials",
     "lint:fix": "eslint nodes credentials --fix",
-    "prepublishOnly": "pnpm build",
+    "prepublishOnly": "npm run build",
     "release": "n8n-node release"
   },
   "files": [
