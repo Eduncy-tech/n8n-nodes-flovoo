@@ -16,11 +16,8 @@ jobs:
         with:
           node-version: 20
           registry-url: 'https://registry.npmjs.org'
-      - run: npm install -g pnpm
-      - run: pnpm install
-      - run: pnpm approve-builds --all
-      - run: pnpm build
-      - run: pnpm lint
+      - run: npm install
+      - run: npm run build
       - run: npm publish --provenance --access public
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
