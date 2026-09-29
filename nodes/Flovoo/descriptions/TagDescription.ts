@@ -33,12 +33,13 @@ export const tagOperations: INodeProperties[] = [
 
 export const tagFields: INodeProperties[] = [
   {
-    displayName: 'Tag',
+    displayName: 'Tag Name or ID',
     name: 'tagId',
     type: 'options',
     typeOptions: { loadOptionsMethod: 'getTags' },
     default: '',
     required: true,
+    description: 'Choose from the list, or specify an ID using an <a href="https://docs.n8n.io/code/expressions/">expression</a>',
     displayOptions: { show: { resource: ['tag'], operation: ['delete'] } },
   },
   {
@@ -49,12 +50,13 @@ export const tagFields: INodeProperties[] = [
     displayOptions: { show: { resource: ['tag'], operation: ['update'] } },
   },
   {
-    displayName: 'Tag',
+    displayName: 'Tag Name or ID',
     name: 'tagId',
     type: 'options',
     typeOptions: { loadOptionsMethod: 'getTags' },
     default: '',
     required: true,
+    description: 'Choose from the list, or specify an ID using an <a href="https://docs.n8n.io/code/expressions/">expression</a>',
     displayOptions: { show: { resource: ['tag'], operation: ['update'] } },
   },
   {
@@ -69,8 +71,9 @@ export const tagFields: INodeProperties[] = [
     displayName: 'Page Size',
     name: 'limit',
     type: 'number',
-    default: 20,
-    typeOptions: { minValue: 1, maxValue: 100 },
+    description: 'Max number of results to return',
+    default: 50,
+    typeOptions: { minValue: 1 },
     displayOptions: { show: { resource: ['tag'], operation: ['getAll'] } },
   },
   {

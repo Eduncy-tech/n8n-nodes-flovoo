@@ -45,8 +45,9 @@ export const messageFields: INodeProperties[] = [
     displayName: 'Page Size',
     name: 'limit',
     type: 'number',
-    default: 20,
-    typeOptions: { minValue: 1, maxValue: 100 },
+    description: 'Max number of results to return',
+    default: 50,
+    typeOptions: { minValue: 1 },
     displayOptions: { show: { resource: ['message'], operation: ['getAll'] } },
   },
   {

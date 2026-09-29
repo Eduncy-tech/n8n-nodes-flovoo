@@ -9,10 +9,28 @@ export const contactOperations: INodeProperties[] = [
     displayOptions: { show: { resource: ['contact'] } },
     options: [
       {
+        name: 'Add Tag',
+        value: 'addTag',
+        action: 'Add a tag to a contact',
+        description: 'Attach an existing tag to a contact',
+      },
+      {
+        name: 'Block',
+        value: 'block',
+        action: 'Block a contact',
+        description: 'Block a contact from sending messages',
+      },
+      {
         name: 'Create',
         value: 'create',
         action: 'Create a contact',
         description: 'Create a new contact with a name and phone number, plus optional email, stage, and tags',
+      },
+      {
+        name: 'Delete',
+        value: 'delete',
+        action: 'Delete a contact',
+        description: 'Permanently delete a contact',
       },
       {
         name: 'Get',
@@ -27,24 +45,6 @@ export const contactOperations: INodeProperties[] = [
         description: 'Return a page of contacts matching the given filters',
       },
       {
-        name: 'Update',
-        value: 'update',
-        action: 'Update a contact',
-        description: "Update a contact's fields. Leave a field empty to keep its current value",
-      },
-      {
-        name: 'Delete',
-        value: 'delete',
-        action: 'Delete a contact',
-        description: 'Permanently delete a contact',
-      },
-      {
-        name: 'Add Tag',
-        value: 'addTag',
-        action: 'Add a tag to a contact',
-        description: 'Attach an existing tag to a contact',
-      },
-      {
         name: 'Remove Tag',
         value: 'removeTag',
         action: 'Remove a tag from a contact',
@@ -57,16 +57,16 @@ export const contactOperations: INodeProperties[] = [
         description: 'Move a contact to a given stage',
       },
       {
-        name: 'Block',
-        value: 'block',
-        action: 'Block a contact',
-        description: 'Block a contact from sending messages',
-      },
-      {
         name: 'Unblock',
         value: 'unblock',
         action: 'Unblock a contact',
         description: 'Unblock a contact and allow them to send messages again',
+      },
+      {
+        name: 'Update',
+        value: 'update',
+        action: 'Update a contact',
+        description: "Update a contact's fields. Leave a field empty to keep its current value",
       },
     ],
     default: 'create',
@@ -105,23 +105,26 @@ export const contactFields: INodeProperties[] = [
     displayName: 'Email',
     name: 'email',
     type: 'string',
+    placeholder: 'name@email.com',
     default: '',
     displayOptions: { show: { resource: ['contact'], operation: ['create'] } },
   },
   {
-    displayName: 'Stage',
+    displayName: 'Stage Name or ID',
     name: 'stageId',
     type: 'options',
     typeOptions: { loadOptionsMethod: 'getStages' },
     default: '',
+    description: 'Choose from the list, or specify an ID using an <a href="https://docs.n8n.io/code/expressions/">expression</a>',
     displayOptions: { show: { resource: ['contact'], operation: ['create'] } },
   },
   {
-    displayName: 'Tags',
+    displayName: 'Tags Names or IDs',
     name: 'tagIds',
     type: 'multiOptions',
     typeOptions: { loadOptionsMethod: 'getTags' },
     default: [],
+    description: 'Choose from the list, or specify IDs using an <a href="https://docs.n8n.io/code/expressions/">expression</a>',
     displayOptions: { show: { resource: ['contact'], operation: ['create'] } },
   },
   {
@@ -134,11 +137,12 @@ export const contactFields: INodeProperties[] = [
     options: [
       { displayName: 'Avatar URL', name: 'avatar', type: 'string', default: '' },
       {
-        displayName: 'Assignee',
+        displayName: 'Assignee Name or ID',
         name: 'assigneeId',
         type: 'options',
         typeOptions: { loadOptionsMethod: 'getUsers' },
         default: '',
+        description: 'Choose from the list, or specify an ID using an <a href="https://docs.n8n.io/code/expressions/">expression</a>',
       },
     ],
   },
@@ -188,8 +192,9 @@ export const contactFields: INodeProperties[] = [
     displayName: 'Page Size',
     name: 'limit',
     type: 'number',
-    default: 20,
-    typeOptions: { minValue: 1, maxValue: 100 },
+    description: 'Max number of results to return',
+    default: 50,
+    typeOptions: { minValue: 1 },
     displayOptions: { show: { resource: ['contact'], operation: ['getAll'] } },
   },
   {
@@ -209,20 +214,22 @@ export const contactFields: INodeProperties[] = [
     displayOptions: { show: { resource: ['contact'], operation: ['getAll'] } },
     options: [
       {
-        displayName: 'Assignees',
+        displayName: 'Assignees Names or IDs',
         name: 'assigneeIds',
         type: 'multiOptions',
         typeOptions: { loadOptionsMethod: 'getUsers' },
         default: [],
+        description: 'Choose from the list, or specify IDs using an <a href="https://docs.n8n.io/code/expressions/">expression</a>',
       },
       { displayName: 'Is Blocked', name: 'isBlocked', type: 'boolean', default: false },
       { displayName: 'Search', name: 'search', type: 'string', default: '' },
       {
-        displayName: 'Stages',
+        displayName: 'Stages Names or IDs',
         name: 'stageIds',
         type: 'multiOptions',
         typeOptions: { loadOptionsMethod: 'getStages' },
         default: [],
+        description: 'Choose from the list, or specify IDs using an <a href="https://docs.n8n.io/code/expressions/">expression</a>',
       },
       {
         displayName: 'Status',
@@ -235,11 +242,12 @@ export const contactFields: INodeProperties[] = [
         default: 'active',
       },
       {
-        displayName: 'Tags',
+        displayName: 'Tags Names or IDs',
         name: 'tagIds',
         type: 'multiOptions',
         typeOptions: { loadOptionsMethod: 'getTags' },
         default: [],
+        description: 'Choose from the list, or specify IDs using an <a href="https://docs.n8n.io/code/expressions/">expression</a>',
       },
     ],
   },
@@ -263,24 +271,26 @@ export const contactFields: INodeProperties[] = [
     displayName: 'Email',
     name: 'email',
     type: 'string',
+    placeholder: 'name@email.com',
     default: '',
     displayOptions: { show: { resource: ['contact'], operation: ['update'] } },
   },
   {
-    displayName: 'Stage',
+    displayName: 'Stage Name or ID',
     name: 'stageId',
     type: 'options',
     typeOptions: { loadOptionsMethod: 'getStages' },
     default: '',
+    description: 'Choose from the list, or specify an ID using an <a href="https://docs.n8n.io/code/expressions/">expression</a>',
     displayOptions: { show: { resource: ['contact'], operation: ['update'] } },
   },
   {
-    displayName: 'Tags',
+    displayName: 'Tags Names or IDs',
     name: 'tagIds',
     type: 'multiOptions',
     typeOptions: { loadOptionsMethod: 'getTags' },
     default: [],
-    description: 'Replaces the whole set of tags',
+    description: 'Choose from the list, or specify IDs using an <a href="https://docs.n8n.io/code/expressions/">expression</a>. Replaces the whole set of tags.',
     displayOptions: { show: { resource: ['contact'], operation: ['update'] } },
   },
   {
@@ -293,11 +303,12 @@ export const contactFields: INodeProperties[] = [
     options: [
       { displayName: 'Avatar URL', name: 'avatar', type: 'string', default: '' },
       {
-        displayName: 'Assignee',
+        displayName: 'Assignee Name or ID',
         name: 'assigneeId',
         type: 'options',
         typeOptions: { loadOptionsMethod: 'getUsers' },
         default: '',
+        description: 'Choose from the list, or specify an ID using an <a href="https://docs.n8n.io/code/expressions/">expression</a>',
       },
       {
         displayName: 'Status',
@@ -347,23 +358,24 @@ export const contactFields: INodeProperties[] = [
 
   // addTag / removeTag
   {
-    displayName: 'Tag',
+    displayName: 'Tag Name or ID',
     name: 'tagId',
     type: 'options',
     typeOptions: { loadOptionsMethod: 'getTags' },
     default: '',
     required: true,
+    description: 'Choose from the list, or specify an ID using an <a href="https://docs.n8n.io/code/expressions/">expression</a>',
     displayOptions: { show: { resource: ['contact'], operation: ['addTag', 'removeTag'] } },
   },
 
   // setStage
   {
-    displayName: 'Stage',
+    displayName: 'Stage Name or ID',
     name: 'stageId',
     type: 'options',
     typeOptions: { loadOptionsMethod: 'getStages' },
     default: '',
-    description: 'Leave empty to clear the stage',
+    description: 'Choose from the list, or specify an ID using an <a href="https://docs.n8n.io/code/expressions/">expression</a>. Leave empty to clear the stage.',
     displayOptions: { show: { resource: ['contact'], operation: ['setStage'] } },
   },
 ];

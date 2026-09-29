@@ -33,12 +33,13 @@ export const stageOperations: INodeProperties[] = [
 
 export const stageFields: INodeProperties[] = [
   {
-    displayName: 'Stage',
+    displayName: 'Stage Name or ID',
     name: 'stageId',
     type: 'options',
     typeOptions: { loadOptionsMethod: 'getStages' },
     default: '',
     required: true,
+    description: 'Choose from the list, or specify an ID using an <a href="https://docs.n8n.io/code/expressions/">expression</a>',
     displayOptions: { show: { resource: ['contactStage'], operation: ['delete'] } },
   },
   {
@@ -49,12 +50,13 @@ export const stageFields: INodeProperties[] = [
     displayOptions: { show: { resource: ['contactStage'], operation: ['update'] } },
   },
   {
-    displayName: 'Stage',
+    displayName: 'Stage Name or ID',
     name: 'stageId',
     type: 'options',
     typeOptions: { loadOptionsMethod: 'getStages' },
     default: '',
     required: true,
+    description: 'Choose from the list, or specify an ID using an <a href="https://docs.n8n.io/code/expressions/">expression</a>',
     displayOptions: { show: { resource: ['contactStage'], operation: ['update'] } },
   },
   {
@@ -72,13 +74,13 @@ export const stageFields: INodeProperties[] = [
     displayOptions: { show: { resource: ['contactStage'], operation: ['update'] } },
   },
   {
-    displayName: 'Transfer To Stage',
+    displayName: 'Transfer To Stage Name or ID',
     name: 'transferToStageId',
     type: 'options',
     typeOptions: { loadOptionsMethod: 'getStagesExcludingSelected' },
     default: '',
     required: true,
-    description: 'Contacts on the deleted stage move here',
+    description: 'Contacts on the deleted stage move here. Choose from the list, or specify an ID using an <a href="https://docs.n8n.io/code/expressions/">expression</a>.',
     displayOptions: { show: { resource: ['contactStage'], operation: ['delete'] } },
   },
 ];

@@ -9,10 +9,22 @@ export const customFieldOperations: INodeProperties[] = [
     displayOptions: { show: { resource: ['customField'] } },
     options: [
       {
+        name: 'Archive',
+        value: 'archive',
+        action: 'Archive a custom field',
+        description: 'Hide a custom field without deleting its data',
+      },
+      {
         name: 'Create',
         value: 'create',
         action: 'Create a custom field',
         description: 'Add a new custom field for contacts',
+      },
+      {
+        name: 'Delete',
+        value: 'delete',
+        action: 'Delete a custom field',
+        description: 'Permanently delete a custom field. Fails if it already has data on any contact — archive it instead',
       },
       {
         name: 'Get Many',
@@ -21,28 +33,16 @@ export const customFieldOperations: INodeProperties[] = [
         description: 'Return every custom field defined for contacts',
       },
       {
-        name: 'Update',
-        value: 'update',
-        action: 'Update a custom field',
-        description: 'Rename a custom field, change its description, or edit its options',
-      },
-      {
-        name: 'Archive',
-        value: 'archive',
-        action: 'Archive a custom field',
-        description: 'Hide a custom field without deleting its data',
-      },
-      {
         name: 'Restore',
         value: 'restore',
         action: 'Restore a custom field',
         description: 'Unarchive a previously archived custom field',
       },
       {
-        name: 'Delete',
-        value: 'delete',
-        action: 'Delete a custom field',
-        description: 'Permanently delete a custom field. Fails if it already has data on any contact — archive it instead',
+        name: 'Update',
+        value: 'update',
+        action: 'Update a custom field',
+        description: 'Rename a custom field, change its description, or edit its options',
       },
     ],
     default: 'getAll',
@@ -120,12 +120,13 @@ export const customFieldFields: INodeProperties[] = [
 
   // update
   {
-    displayName: 'Custom Field',
+    displayName: 'Custom Field Name or ID',
     name: 'customFieldId',
     type: 'options',
     typeOptions: { loadOptionsMethod: 'getCustomFields' },
     default: '',
     required: true,
+    description: 'Choose from the list, or specify an ID using an <a href="https://docs.n8n.io/code/expressions/">expression</a>',
     displayOptions: { show: { resource: ['customField'], operation: ['update'] } },
   },
   {
@@ -183,24 +184,25 @@ export const customFieldFields: INodeProperties[] = [
 
   // archive / delete
   {
-    displayName: 'Custom Field',
+    displayName: 'Custom Field Name or ID',
     name: 'customFieldId',
     type: 'options',
     typeOptions: { loadOptionsMethod: 'getCustomFields' },
     default: '',
     required: true,
+    description: 'Choose from the list, or specify an ID using an <a href="https://docs.n8n.io/code/expressions/">expression</a>',
     displayOptions: { show: { resource: ['customField'], operation: ['archive', 'delete'] } },
   },
 
   // restore
   {
-    displayName: 'Custom Field',
+    displayName: 'Custom Field Name or ID',
     name: 'customFieldId',
     type: 'options',
     typeOptions: { loadOptionsMethod: 'getArchivedCustomFields' },
     default: '',
     required: true,
-    description: 'Only archived custom fields can be restored',
+    description: 'Choose from the list, or specify an ID using an <a href="https://docs.n8n.io/code/expressions/">expression</a>. Only archived custom fields can be restored.',
     displayOptions: { show: { resource: ['customField'], operation: ['restore'] } },
   },
 

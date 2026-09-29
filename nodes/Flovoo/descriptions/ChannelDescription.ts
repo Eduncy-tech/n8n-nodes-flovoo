@@ -26,10 +26,10 @@ export const channelFields: INodeProperties[] = [
     type: 'options',
     options: [
       { name: 'Any', value: '' },
-      { name: 'WhatsApp', value: 'WHATSAPP' },
-      { name: 'Messenger', value: 'MESSENGER' },
       { name: 'Instagram', value: 'INSTAGRAM' },
       { name: 'Internal', value: 'INTERNAL' },
+      { name: 'Messenger', value: 'MESSENGER' },
+      { name: 'WhatsApp', value: 'WHATSAPP' },
       { name: 'Widget', value: 'WIDGET' },
     ],
     default: '',

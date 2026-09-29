@@ -48,12 +48,13 @@ export const conversationFields: INodeProperties[] = [
     displayOptions: { show: { resource: ['conversation'], operation: ['create'] } },
   },
   {
-    displayName: 'Channel',
+    displayName: 'Channel Name or ID',
     name: 'channelId',
     type: 'options',
     typeOptions: { loadOptionsMethod: 'getChannels' },
     default: '',
     required: true,
+    description: 'Choose from the list, or specify an ID using an <a href="https://docs.n8n.io/code/expressions/">expression</a>',
     displayOptions: { show: { resource: ['conversation'], operation: ['create'] } },
   },
 
@@ -72,8 +73,9 @@ export const conversationFields: INodeProperties[] = [
     displayName: 'Page Size',
     name: 'limit',
     type: 'number',
-    default: 20,
-    typeOptions: { minValue: 1, maxValue: 100 },
+    description: 'Max number of results to return',
+    default: 50,
+    typeOptions: { minValue: 1 },
     displayOptions: { show: { resource: ['conversation'], operation: ['getAll', 'listMedia'] } },
   },
   {
