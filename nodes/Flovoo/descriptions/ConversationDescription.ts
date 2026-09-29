@@ -92,8 +92,6 @@ export const conversationFields: INodeProperties[] = [
     default: {},
     displayOptions: { show: { resource: ['conversation'], operation: ['getAll', 'count'] } },
     options: [
-      { displayName: 'Search', name: 'search', type: 'string', default: '' },
-      { displayName: 'Contact ID', name: 'contactId', type: 'string', default: '' },
       {
         displayName: 'Category',
         name: 'category',
@@ -105,16 +103,7 @@ export const conversationFields: INodeProperties[] = [
         ],
         default: 'all',
       },
-      {
-        displayName: 'Status',
-        name: 'status',
-        type: 'options',
-        options: [
-          { name: 'Active', value: 'active' },
-          { name: 'Archived', value: 'archived' },
-        ],
-        default: 'active',
-      },
+      { displayName: 'Contact ID', name: 'contactId', type: 'string', default: '' },
       {
         displayName: 'Quick Filter',
         name: 'quickFilter',
@@ -124,6 +113,17 @@ export const conversationFields: INodeProperties[] = [
           { name: 'Not Replied', value: 'NotReplied' },
         ],
         default: 'Unread',
+      },
+      { displayName: 'Search', name: 'search', type: 'string', default: '' },
+      {
+        displayName: 'Status',
+        name: 'status',
+        type: 'options',
+        options: [
+          { name: 'Active', value: 'active' },
+          { name: 'Archived', value: 'archived' },
+        ],
+        default: 'active',
       },
     ],
   },

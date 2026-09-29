@@ -7,7 +7,7 @@ import type {
   INodePropertyOptions,
   IDataObject,
 } from 'n8n-workflow';
-import { NodeConnectionTypes } from 'n8n-workflow';
+import { NodeConnectionTypes, NodeOperationError } from 'n8n-workflow';
 
 import { flovooApiRequest, cleanObject } from './GenericFunctions';
 import { channelFields, channelOperations } from './descriptions/ChannelDescription';
@@ -123,7 +123,7 @@ export class Flovoo implements INodeType {
             const response = await flovooApiRequest.call(this, 'GET', '/v1/contacts', {}, { search: searchValue, limit: 1 });
             const [match] = response.data as IDataObject[];
             if (!match) {
-              throw new Error(`No contact found matching "${searchValue}"`);
+              throw new NodeOperationError(this.getNode(), `No contact found matching "${searchValue}"`);
             }
             responseData = match;
           } else {
