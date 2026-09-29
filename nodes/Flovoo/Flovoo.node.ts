@@ -42,8 +42,8 @@ export class Flovoo implements INodeType {
     description:
       'Manage contacts and conversations on Flovoo — send messages, sync contacts, and more.',
     defaults: { name: 'Flovoo' },
-    inputs: ['main'],
-    outputs: ['main'],
+    inputs: [NodeConnectionTypes.Main],
+    outputs: [NodeConnectionTypes.Main],
     credentials: [{ name: 'flovooApi', required: true }],
     properties: [
       {

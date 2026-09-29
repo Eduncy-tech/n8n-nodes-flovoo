@@ -126,7 +126,7 @@ export const customFieldFields: INodeProperties[] = [
     typeOptions: { loadOptionsMethod: 'getCustomFields' },
     default: '',
     required: true,
-    description: 'Choose from the list, or specify an ID using an <a href="https://docs.n8n.io/code-examples/expressions/">expression</a>',
+    description: 'Choose from the list, or specify an ID using an <a href="https://docs.n8n.io/code/expressions/">expression</a>',
     displayOptions: { show: { resource: ['customField'], operation: ['update'] } },
   },
   {
@@ -190,7 +190,7 @@ export const customFieldFields: INodeProperties[] = [
     typeOptions: { loadOptionsMethod: 'getCustomFields' },
     default: '',
     required: true,
-    description: 'Choose from the list, or specify an ID using an <a href="https://docs.n8n.io/code-examples/expressions/">expression</a>',
+    description: 'Choose from the list, or specify an ID using an <a href="https://docs.n8n.io/code/expressions/">expression</a>',
     displayOptions: { show: { resource: ['customField'], operation: ['archive', 'delete'] } },
   },
 
@@ -202,7 +202,7 @@ export const customFieldFields: INodeProperties[] = [
     typeOptions: { loadOptionsMethod: 'getArchivedCustomFields' },
     default: '',
     required: true,
-    description: 'Choose from the list, or specify an ID using an <a href="https://docs.n8n.io/code-examples/expressions/">expression</a>',
+    description: 'Choose from the list, or specify an ID using an <a href="https://docs.n8n.io/code/expressions/">expression</a>',
     displayOptions: { show: { resource: ['customField'], operation: ['restore'] } },
   },
 
