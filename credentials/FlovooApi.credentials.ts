@@ -8,6 +8,7 @@ import type {
 export class FlovooApi implements ICredentialType {
   name = 'flovooApi';
   displayName = 'Flovoo API';
+  icon = 'file:../nodes/Flovoo/icons/flovoo.light.svg' as const;
   documentationUrl = 'https://api.flovoo.com/docs';
 
   properties: INodeProperties[] = [

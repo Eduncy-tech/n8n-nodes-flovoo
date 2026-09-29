@@ -42,9 +42,10 @@ export class FlovooTrigger implements INodeType {
   description: INodeTypeDescription = {
     displayName: 'Flovoo Trigger',
     name: 'flovooTrigger',
-    icon: 'file:icons/flovoo.png',
+    icon: { light: 'file:icons/flovoo.light.svg', dark: 'file:icons/flovoo.dark.svg' },
     group: ['trigger'],
     version: 1,
+    subtitle: '={{$parameter["events"].join(", ")}}',
     description:
       'Trigger workflows on Flovoo events — new messages, contact updates, and template status changes.',
     defaults: { name: 'Flovoo Trigger' },
@@ -108,7 +109,8 @@ export class FlovooTrigger implements INodeType {
           delete webhookData.webhookSubscriptionId;
           delete webhookData.webhookSecret;
           return false;
-        } catch {
+        } catch (error) {
+          this.logger.warn('Failed to check webhook existence', { error });
           return true;
         }
       },

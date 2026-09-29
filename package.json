@@ -1,8 +1,12 @@
 {
   "name": "n8n-nodes-flovoo",
-  "version": "0.1.2",
+  "version": "0.1.3",
   "description": "n8n community node for the Flovoo WhatsApp Business API",
-  "keywords": ["n8n-community-node-package", "flovoo", "whatsapp"],
+  "keywords": [
+    "n8n-community-node-package",
+    "flovoo",
+    "whatsapp"
+  ],
   "license": "MIT",
   "author": {
     "name": "Flovoo",
@@ -12,26 +16,39 @@
     "type": "git",
     "url": "https://github.com/Eduncy-tech/n8n-nodes-flovoo.git"
   },
-  "main": "index.js",
+  "main": "dist/index.js",
   "scripts": {
-    "build": "rm -rf dist && tsc -p tsconfig.json && cp -r nodes/Flovoo/icons dist/nodes/Flovoo/icons",
+    "build": "rm -rf dist && tsc -p tsconfig.json && cp -r nodes/Flovoo/icons dist/nodes/Flovoo/icons && cp nodes/Flovoo/*.node.json dist/nodes/Flovoo/",
     "dev": "tsc -p tsconfig.json --watch",
     "lint": "eslint nodes credentials",
-    "prepublishOnly": "pnpm build"
+    "lint:fix": "eslint nodes credentials --fix",
+    "prepublishOnly": "pnpm build",
+    "release": "n8n-node release"
   },
-  "files": ["dist"],
+  "files": [
+    "dist"
+  ],
   "n8n": {
     "n8nNodesApiVersion": 1,
-    "credentials": ["dist/credentials/FlovooApi.credentials.js"],
+    "credentials": [
+      "dist/credentials/FlovooApi.credentials.js"
+    ],
     "nodes": [
       "dist/nodes/Flovoo/Flovoo.node.js",
       "dist/nodes/Flovoo/FlovooTrigger.node.js"
     ]
   },
   "devDependencies": {
+    "@n8n/eslint-plugin-community-nodes": "latest",
+    "@n8n/node-cli": ">=0.23.0",
     "@types/node": "^20.0.0",
+    "eslint": "9.29.0",
     "n8n-workflow": "^1.70.0",
-    "typescript": "^5.5.0"
+    "typescript": "^5.5.0",
+    "typescript-eslint": "^8.71.0"
+  },
+  "engines": {
+    "node": ">=20"
   },
   "peerDependencies": {
     "n8n-workflow": "*"

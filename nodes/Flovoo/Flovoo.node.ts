@@ -34,10 +34,11 @@ export class Flovoo implements INodeType {
   description: INodeTypeDescription = {
     displayName: 'Flovoo',
     name: 'flovoo',
-    icon: 'file:icons/flovoo.png',
+    icon: { light: 'file:icons/flovoo.light.svg', dark: 'file:icons/flovoo.dark.svg' },
     group: ['transform'],
     version: 1,
     subtitle: '={{$parameter["operation"] + ": " + $parameter["resource"]}}',
+    usableAsTool: true,
     description:
       'Manage contacts and conversations on Flovoo — send messages, sync contacts, and more.',
     defaults: { name: 'Flovoo' },
