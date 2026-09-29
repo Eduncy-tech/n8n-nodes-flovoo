@@ -93,7 +93,7 @@ export const templateFields: INodeProperties[] = [
     typeOptions: { loadOptionsMethod: 'getTemplates' },
     default: '',
     required: true,
-    description: 'Choose from the list, or specify an ID using an <a href="https://docs.n8n.io/code/expressions/">expression</a>',
+    description: 'Choose from the list, or specify an ID using an <a href="https://docs.n8n.io/code-examples/expressions/">expression</a>',
     displayOptions: { show: { resource: ['template'], operation: ['send'] } },
   },
   {
@@ -112,7 +112,7 @@ export const templateFields: INodeProperties[] = [
         description: 'Comma-separated values, in the order the template variables appear',
       },
       { displayName: 'Header Text Parameter', name: 'headerTextParameter', type: 'string', default: '' },
-      { displayName: 'Header Media Key', name: 'headerMediaKey', type: 'string', default: '' },
+      { displayName: 'Header Media URL', name: 'headerMediaUrl', type: 'string', default: '' },
       {
         displayName: 'URL Button Parameters',
         name: 'urlButtonParameters',

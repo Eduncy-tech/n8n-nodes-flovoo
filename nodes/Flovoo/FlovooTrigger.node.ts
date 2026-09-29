@@ -50,7 +50,7 @@ export class FlovooTrigger implements INodeType {
       'Trigger workflows on Flovoo events — new messages, contact updates, and template status changes.',
     defaults: { name: 'Flovoo Trigger' },
     inputs: [],
-    outputs: [NodeConnectionTypes.Main],
+    outputs: ['main'],
     credentials: [{ name: 'flovooApi', required: true }],
     webhooks: [
       {

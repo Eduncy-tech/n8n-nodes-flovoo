@@ -42,8 +42,8 @@ export class Flovoo implements INodeType {
     description:
       'Manage contacts and conversations on Flovoo — send messages, sync contacts, and more.',
     defaults: { name: 'Flovoo' },
-    inputs: [NodeConnectionTypes.Main],
-    outputs: [NodeConnectionTypes.Main],
+    inputs: ['main'],
+    outputs: ['main'],
     credentials: [{ name: 'flovooApi', required: true }],
     properties: [
       {
@@ -358,7 +358,7 @@ export class Flovoo implements INodeType {
             templateId,
             bodyParameters: splitIds(additional.bodyParameters as string),
             headerTextParameter: additional.headerTextParameter,
-            headerMediaKey: additional.headerMediaKey,
+            headerMediaKey: additional.headerMediaUrl,
             urlButtonParameters: splitIds(additional.urlButtonParameters as string),
           });
           responseData = await flovooApiRequest.call(this, 'POST', '/v1/whatsapp-templates/send', body);

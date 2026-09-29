@@ -24,7 +24,7 @@ export const customFieldOperations: INodeProperties[] = [
         name: 'Delete',
         value: 'delete',
         action: 'Delete a custom field',
-        description: 'Permanently delete a custom field. Fails if it already has data on any contact — archive it instead',
+        description: 'Permanently delete a custom field. Fails if it already has data on any contact — archive it instead.',
       },
       {
         name: 'Get Many',
@@ -126,7 +126,7 @@ export const customFieldFields: INodeProperties[] = [
     typeOptions: { loadOptionsMethod: 'getCustomFields' },
     default: '',
     required: true,
-    description: 'Choose from the list, or specify an ID using an <a href="https://docs.n8n.io/code/expressions/">expression</a>',
+    description: 'Choose from the list, or specify an ID using an <a href="https://docs.n8n.io/code-examples/expressions/">expression</a>',
     displayOptions: { show: { resource: ['customField'], operation: ['update'] } },
   },
   {
@@ -150,7 +150,7 @@ export const customFieldFields: INodeProperties[] = [
     placeholder: 'Add Option',
     default: {},
     typeOptions: { multipleValues: true },
-    description: 'Required for Single Select and Multi Select fields. To edit an existing option, its Option ID must be set — leave blank to add a new option instead',
+    description: 'Required for Single Select and Multi Select fields. To edit an existing option, its Option ID must be set — leave blank to add a new option instead.',
     displayOptions: { show: { resource: ['customField'], operation: ['update'] } },
     options: [
       {
@@ -162,7 +162,7 @@ export const customFieldFields: INodeProperties[] = [
             name: 'id',
             type: 'string',
             default: '',
-            description: 'Leave blank when adding a new option. Set to an existing option\'s ID (from Custom Field > Get Many) to rename or recolor it instead of creating a duplicate',
+            description: 'Leave blank when adding a new option. Set to an existing option\'s ID (from Custom Field > Get Many) to rename or recolor it instead of creating a duplicate.',
           },
           {
             displayName: 'Label',
@@ -190,7 +190,7 @@ export const customFieldFields: INodeProperties[] = [
     typeOptions: { loadOptionsMethod: 'getCustomFields' },
     default: '',
     required: true,
-    description: 'Choose from the list, or specify an ID using an <a href="https://docs.n8n.io/code/expressions/">expression</a>',
+    description: 'Choose from the list, or specify an ID using an <a href="https://docs.n8n.io/code-examples/expressions/">expression</a>',
     displayOptions: { show: { resource: ['customField'], operation: ['archive', 'delete'] } },
   },
 
@@ -202,7 +202,7 @@ export const customFieldFields: INodeProperties[] = [
     typeOptions: { loadOptionsMethod: 'getArchivedCustomFields' },
     default: '',
     required: true,
-    description: 'Choose from the list, or specify an ID using an <a href="https://docs.n8n.io/code/expressions/">expression</a>. Only archived custom fields can be restored.',
+    description: 'Choose from the list, or specify an ID using an <a href="https://docs.n8n.io/code-examples/expressions/">expression</a>',
     displayOptions: { show: { resource: ['customField'], operation: ['restore'] } },
   },
 

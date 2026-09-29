@@ -104,7 +104,7 @@ export const messageFields: INodeProperties[] = [
         name: 'type',
         type: 'string',
         default: '',
-        description: 'e.g. image, video, audio, document',
+        description: 'E.g. image, video, audio, document.',
       },
       { displayName: 'Name', name: 'name', type: 'string', default: '' },
     ],
@@ -140,7 +140,7 @@ export const messageFields: INodeProperties[] = [
     type: 'string',
     default: '',
     required: true,
-    description: 'The WhatsApp message id (e.g. wamid.xxx), not the Flovoo message UUID',
+    description: 'The WhatsApp message ID (e.g. wamid.xxx), not the Flovoo message UUID',
     displayOptions: { show: { resource: ['message'], operation: ['sendReaction'] } },
   },
   {
