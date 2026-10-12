@@ -158,6 +158,7 @@ export class FlovooTrigger implements INodeType {
           const statusCode = (error as { statusCode?: number; response?: { statusCode?: number } })
             .statusCode ?? (error as { response?: { statusCode?: number } }).response?.statusCode;
           if (statusCode !== 404) {
+            this.logger.warn('Failed to delete Flovoo webhook subscription', { subscriptionId, error });
             return true;
           }
           // 404: already gone server-side, nothing more to clean up.

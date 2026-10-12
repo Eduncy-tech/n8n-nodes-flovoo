@@ -11,6 +11,7 @@ import { NodeConnectionTypes, NodeOperationError } from 'n8n-workflow';
 
 import { flovooApiRequest, cleanObject } from './GenericFunctions';
 import { channelFields, channelOperations } from './descriptions/ChannelDescription';
+import { commentFields, commentOperations } from './descriptions/CommentDescription';
 import { contactFields, contactOperations } from './descriptions/ContactDescription';
 import { stageFields as contactStageFields, stageOperations as contactStageOperations } from './descriptions/ContactStageDescription';
 import { conversationFields, conversationOperations } from './descriptions/ConversationDescription';
@@ -53,6 +54,7 @@ export class Flovoo implements INodeType {
         noDataExpression: true,
         options: [
           { name: 'Channel', value: 'channel' },
+          { name: 'Comment', value: 'comment' },
           { name: 'Contact', value: 'contact' },
           { name: 'Conversation', value: 'conversation' },
           { name: 'Custom Field', value: 'customField' },
@@ -85,6 +87,8 @@ export class Flovoo implements INodeType {
       ...userFields,
       ...channelOperations,
       ...channelFields,
+      ...commentOperations,
+      ...commentFields,
     ],
   };
 
@@ -279,19 +283,6 @@ export class Flovoo implements INodeType {
         if (operation === 'getAll') {
           const response = await flovooApiRequest.call(this, 'GET', '/v1/contact-stages');
           responseData = response.data as IDataObject[];
-        } else if (operation === 'update') {
-          const name = this.getNodeParameter('name', i) as string;
-          const stageId = this.getNodeParameter('stageId', i) as string;
-          const color = this.getNodeParameter('color', i) as string;
-          const description = this.getNodeParameter('description', i) as string;
-          responseData = await flovooApiRequest.call(
-            this, 'PATCH', `/v1/contact-stages/${stageId}`, cleanObject({ name, color, description }),
-          );
-        } else if (operation === 'delete') {
-          const stageId = this.getNodeParameter('stageId', i) as string;
-          const transferToStageId = this.getNodeParameter('transferToStageId', i) as string;
-          await flovooApiRequest.call(this, 'DELETE', `/v1/contact-stages/${stageId}`, { transferToStageId });
-          responseData = { success: true };
         }
       } else if (resource === 'segment') {
         const response = await flovooApiRequest.call(this, 'GET', '/v1/segments');
@@ -334,10 +325,6 @@ export class Flovoo implements INodeType {
         } else if (operation === 'restore') {
           const customFieldId = this.getNodeParameter('customFieldId', i) as string;
           responseData = await flovooApiRequest.call(this, 'PATCH', `/v1/custom-fields/${customFieldId}/restore`);
-        } else if (operation === 'delete') {
-          const customFieldId = this.getNodeParameter('customFieldId', i) as string;
-          await flovooApiRequest.call(this, 'DELETE', `/v1/custom-fields/${customFieldId}`);
-          responseData = { success: true };
         }
       } else if (resource === 'template') {
         if (operation === 'getAll') {
@@ -374,6 +361,14 @@ export class Flovoo implements INodeType {
         const platformType = this.getNodeParameter('platformType', i) as string;
         const response = await flovooApiRequest.call(this, 'GET', '/v1/channels', {}, cleanObject({ platformType }));
         responseData = response.data as IDataObject[];
+      } else if (resource === 'comment') {
+        if (operation === 'create') {
+          const contactId = this.getNodeParameter('contactId', i) as string;
+          const content = this.getNodeParameter('content', i) as string;
+          const parentId = this.getNodeParameter('parentId', i) as string;
+          const body = cleanObject({ contactId, content, parentId: parentId || undefined });
+          responseData = await flovooApiRequest.call(this, 'POST', '/v1/contact-comments', body);
+        }
       }
 
       if (Array.isArray(responseData)) {
@@ -401,16 +396,6 @@ export class Flovoo implements INodeType {
           name: stage.name as string,
           value: stage.id as string,
         }));
-      },
-      async getStagesExcludingSelected(this: ILoadOptionsFunctions): Promise<INodePropertyOptions[]> {
-        const response = await flovooApiRequest.call(this as unknown as IExecuteFunctions, 'GET', '/v1/contact-stages');
-        const selectedStageId = this.getCurrentNodeParameter('stageId') as string;
-        return (response.data as IDataObject[])
-          .filter((stage) => stage.id !== selectedStageId)
-          .map((stage) => ({
-            name: stage.name as string,
-            value: stage.id as string,
-          }));
       },
       async getUsers(this: ILoadOptionsFunctions): Promise<INodePropertyOptions[]> {
         const response = await flovooApiRequest.call(this as unknown as IExecuteFunctions, 'GET', '/v1/users', {}, { limit: 100 });

@@ -21,12 +21,6 @@ export const customFieldOperations: INodeProperties[] = [
         description: 'Add a new custom field for contacts',
       },
       {
-        name: 'Delete',
-        value: 'delete',
-        action: 'Delete a custom field',
-        description: 'Permanently delete a custom field. Fails if it already has data on any contact — archive it instead.',
-      },
-      {
         name: 'Get Many',
         value: 'getAll',
         action: 'Get many custom fields',
@@ -182,7 +176,7 @@ export const customFieldFields: INodeProperties[] = [
     ],
   },
 
-  // archive / delete
+  // archive
   {
     displayName: 'Custom Field Name or ID',
     name: 'customFieldId',
@@ -191,7 +185,7 @@ export const customFieldFields: INodeProperties[] = [
     default: '',
     required: true,
     description: 'Choose from the list, or specify an ID using an <a href="https://docs.n8n.io/code/expressions/">expression</a>',
-    displayOptions: { show: { resource: ['customField'], operation: ['archive', 'delete'] } },
+    displayOptions: { show: { resource: ['customField'], operation: ['archive'] } },
   },
 
   // restore
